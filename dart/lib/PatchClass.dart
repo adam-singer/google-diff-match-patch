@@ -72,7 +72,8 @@ class Patch {
         text.write(' ');
         break;
       }
-      text.write(encodeUri(aDiff.text)).add('\n');
+      text..write(Uri.encodeFull(aDiff.text))
+          ..write('\n');
     }
     return text.toString().replaceAll('%20', ' ');
   }

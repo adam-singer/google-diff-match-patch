@@ -19,6 +19,7 @@
 
 library DiffMatchPatch;
 
+import 'dart:collection';
 import 'dart:math';
 import 'dart:convert';
 
