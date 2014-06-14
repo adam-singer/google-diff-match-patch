@@ -1425,8 +1425,8 @@ class DiffMatchPatch {
    * Returns the best match index or -1.
    */
   int _match_bitap(String text, String pattern, int loc) {
-    Expect.isTrue(Match_MaxBits == 0 || pattern.length <= Match_MaxBits,
-        'Pattern too long for this application.');
+    // 'Pattern too long for this application.'
+    assert(Match_MaxBits == 0 || pattern.length <= Match_MaxBits);
 
     // Initialise the alphabet.
     Map<String, int> s = _match_alphabet(pattern);
