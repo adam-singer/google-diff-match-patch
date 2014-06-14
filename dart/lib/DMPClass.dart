@@ -142,7 +142,7 @@ class DiffMatchPatch {
 
     // Restore the prefix and suffix.
     if (!commonprefix.isEmpty) {
-      diffs.insertRange(0, 1, new Diff(DIFF_EQUAL, commonprefix));
+      diffs.insert(0, new Diff(DIFF_EQUAL, commonprefix));
     }
     if (!commonsuffix.isEmpty) {
       diffs.add(new Diff(DIFF_EQUAL, commonsuffix));
@@ -277,7 +277,7 @@ class DiffMatchPatch {
           final a = diff_main(text_delete.toString(), text_insert.toString(),
               false, deadline);
           for (int j = a.length - 1; j >= 0; j--) {
-            diffs.insertRange(pointer, 1, a[j]);
+            diffs.insert(pointer, a[j]);
           }
           pointer = pointer + a.length;
         }
@@ -727,7 +727,7 @@ class DiffMatchPatch {
             && (lastequality.length <= max(length_insertions2,
                                                 length_deletions2))) {
           // Duplicate record.
-          diffs.insertRange(equalities.last, 1,
+          diffs.insert(equalities.last,
                             new Diff(DIFF_DELETE, lastequality));
           // Change second copy to insert.
           diffs[equalities.last + 1].operation = DIFF_INSERT;
@@ -774,7 +774,7 @@ class DiffMatchPatch {
               overlap_length1 >= insertion.length / 2) {
             // Overlap found.
             // Insert an equality and trim the surrounding edits.
-            diffs.insertRange(pointer, 1,
+            diffs.insert(pointer,
                 new Diff(DIFF_EQUAL, insertion.substring(0, overlap_length1)));
             diffs[pointer - 1].text =
                 deletion.substring(0, deletion.length - overlap_length1);
@@ -786,7 +786,7 @@ class DiffMatchPatch {
               overlap_length2 >= insertion.length / 2) {
             // Reverse overlap found.
             // Insert an equality and swap and trim the surrounding edits.
-            diffs.insertRange(pointer, 1,
+            diffs.insert(pointer,
                 new Diff(DIFF_EQUAL, deletion.substring(0, overlap_length2)));
             diffs[pointer - 1] = new Diff(DIFF_INSERT,
                 insertion.substring(0, insertion.length - overlap_length2));
@@ -982,7 +982,7 @@ class DiffMatchPatch {
             && ((pre_ins ? 1 : 0) + (pre_del ? 1 : 0) + (post_ins ? 1 : 0)
                 + (post_del ? 1 : 0)) == 3))) {
           // Duplicate record.
-          diffs.insertRange(equalities.last, 1,
+          diffs.insert(equalities.last,
                             new Diff(DIFF_DELETE, lastequality));
           // Change second copy to insert.
           diffs[equalities.last + 1].operation = DIFF_INSERT;
@@ -1050,7 +1050,7 @@ class DiffMatchPatch {
                   diffs[i].text = '${diffs[i].text}'
                       '${text_insert.substring(0, commonlength)}';
                 } else {
-                  diffs.insertRange(0, 1, new Diff(DIFF_EQUAL,
+                  diffs.insert(0, new Diff(DIFF_EQUAL,
                                     text_insert.substring(0, commonlength)));
                   pointer++;
                 }
@@ -1072,18 +1072,18 @@ class DiffMatchPatch {
             // Delete the offending records and add the merged ones.
             if (count_delete == 0) {
               diffs.removeRange(pointer - count_insert, count_insert);
-              diffs.insertRange(pointer - count_insert, 1,
+              diffs.insert(pointer - count_insert,
                   new Diff(DIFF_INSERT, text_insert));
             } else if (count_insert == 0) {
               diffs.removeRange(pointer - count_delete, count_delete);
-              diffs.insertRange(pointer - count_delete, 1,
+              diffs.insert(pointer - count_delete,
                   new Diff(DIFF_DELETE, text_delete));
             } else {
               diffs.removeRange(pointer - count_delete - count_insert,
                   count_delete + count_insert);
-              diffs.insertRange(pointer - count_delete - count_insert, 1,
+              diffs.insert(pointer - count_delete - count_insert,
                   new Diff(DIFF_INSERT, text_insert));
-              diffs.insertRange(pointer - count_delete - count_insert, 1,
+              diffs.insert(pointer - count_delete - count_insert,
                   new Diff(DIFF_DELETE, text_delete));
             }
             pointer = pointer - count_delete - count_insert
@@ -1584,7 +1584,7 @@ class DiffMatchPatch {
     final prefix = text.substring(max(0, patch.start2 - padding),
         patch.start2);
     if (!prefix.isEmpty) {
-      patch.diffs.insertRange(0, 1, new Diff(DIFF_EQUAL, prefix));
+      patch.diffs.insert(0, new Diff(DIFF_EQUAL, prefix));
     }
     // Add the suffix.
     final suffix = text.substring(patch.start2 + patch.length1,
@@ -1897,7 +1897,7 @@ class DiffMatchPatch {
     List<Diff> diffs = patch.diffs;
     if (diffs.isEmpty || diffs[0].operation != DIFF_EQUAL) {
       // Add nullPadding equality.
-      diffs.insertRange(0, 1, new Diff(DIFF_EQUAL, nullPadding));
+      diffs.insert(0, new Diff(DIFF_EQUAL, nullPadding));
       patch.start1 -= paddingLength;  // Should be 0.
       patch.start2 -= paddingLength;  // Should be 0.
       patch.length1 += paddingLength;
@@ -2026,7 +2026,7 @@ class DiffMatchPatch {
           }
         }
         if (!empty) {
-          patches.insertRange(++x, 1, patch);
+          patches.insert(++x, patch);
         }
       }
     }
