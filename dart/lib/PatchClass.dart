@@ -63,16 +63,16 @@ class Patch {
     for (Diff aDiff in this.diffs) {
       switch (aDiff.operation) {
       case DIFF_INSERT:
-        text.add('+');
+        text.write('+');
         break;
       case DIFF_DELETE:
-        text.add('-');
+        text.write('-');
         break;
       case DIFF_EQUAL:
-        text.add(' ');
+        text.write(' ');
         break;
       }
-      text.add(encodeUri(aDiff.text)).add('\n');
+      text.write(encodeUri(aDiff.text)).add('\n');
     }
     return text.toString().replaceAll('%20', ' ');
   }
