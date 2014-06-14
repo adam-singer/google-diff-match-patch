@@ -32,10 +32,10 @@ List<String> _diff_rebuildtexts(diffs) {
   final text2 = new StringBuffer();
   for (int x = 0; x < diffs.length; x++) {
     if (diffs[x].operation != DIFF_INSERT) {
-      text1.add(diffs[x].text);
+      text1.write(diffs[x].text);
     }
     if (diffs[x].operation != DIFF_DELETE) {
-      text2.add(diffs[x].text);
+      text2.write(diffs[x].text);
     }
   }
   return [text1.toString(), text2.toString()];
@@ -127,10 +127,10 @@ void testDiffLinesToChars() {
   StringBuffer charList = new StringBuffer();
   for (int x = 1; x < n + 1; x++) {
     lineList.add('$x\n');
-    charList.add(new String.fromCharCodes([x]));
+    charList.write(new String.fromCharCodes([x]));
   }
   Expect.equals(n, lineList.length);
-  String lines = Strings.join(lineList, '');
+  String lines = lineList.join();
   String chars = charList.toString();
   Expect.equals(n, chars.length);
   lineList.insertRange(0, 1, '');
@@ -154,7 +154,7 @@ void testDiffCharsToLines() {
   StringBuffer charList = new StringBuffer();
   for (int x = 1; x < n + 1; x++) {
     lineList.add('$x\n');
-    charList.add(new String.fromCharCodes([x]));
+    charList.write(new String.fromCharCodes([x]));
   }
   Expect.equals(n, lineList.length);
   String lines = Strings.join(lineList, '');
@@ -414,7 +414,7 @@ void testDiffBisect() {
   // If the order changes, tweak this test as required.
   List<Diff> diffs = [new Diff(DIFF_DELETE, 'c'), new Diff(DIFF_INSERT, 'm'), new Diff(DIFF_EQUAL, 'a'), new Diff(DIFF_DELETE, 't'), new Diff(DIFF_INSERT, 'p')];
   // One year should be sufficient.
-  Date deadline = new Date.now().add(new Duration(days : 365));
+  DateTime deadline = new DateTime.now().add(new Duration(days : 365));
   Expect.listEquals(diffs, dmp._diff_bisect(a, b, deadline), 'diff_bisect: Normal.');
 
   // Timeout.
@@ -476,9 +476,9 @@ void testDiffMain() {
     a = '$a$a';
     b = '$b$b';
   }
-  Date startTime = new Date.now();
+  DateTime startTime = new DateTime.now();
   dmp.diff_main(a, b);
-  Date endTime = new Date.now();
+  DateTime endTime = new DateTime.now();
   double elapsedSeconds = endTime.difference(startTime).inMilliseconds / 1000;
   // Test that we took at least the timeout period.
   Expect.isTrue(dmp.Diff_Timeout <= elapsedSeconds, 'diff_main: Timeout min.');
