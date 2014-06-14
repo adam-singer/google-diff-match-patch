@@ -17,13 +17,14 @@
  * limitations under the License.
  */
 
+library test_harness;
+
 // Can't import DiffMatchPatch library since the private functions would be
 // unavailable.  Instead, import all the source files.
 import 'dart:math';
-import 'dart:uri';
-part 'DMPClass.dart';
-part 'DiffClass.dart';
-part 'PatchClass.dart';
+import 'dart:convert';
+
+import 'package:diff_match_patch/DiffMatchPatch.dart';
 
 List<String> _diff_rebuildtexts(diffs) {
   // Construct the two texts which made up the diff originally.

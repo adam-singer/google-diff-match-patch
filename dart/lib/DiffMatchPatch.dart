@@ -20,7 +20,7 @@
 library DiffMatchPatch;
 
 import 'dart:math';
-import 'dart:uri';
+import 'dart:convert';
 
 part 'DMPClass.dart';
 part 'DiffClass.dart';
