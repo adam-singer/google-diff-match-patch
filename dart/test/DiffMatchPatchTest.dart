@@ -21,8 +21,11 @@ library test_harness;
 
 // Can't import DiffMatchPatch library since the private functions would be
 // unavailable.  Instead, import all the source files.
+// TODO(adam): use mirrors to access private methods.
 import 'dart:math';
 import 'dart:convert';
+
+import 'package:unittest/unittest.dart';
 
 import 'package:diff_match_patch/DiffMatchPatch.dart';
 
@@ -48,35 +51,35 @@ DiffMatchPatch dmp;
 
 void testDiffCommonPrefix() {
   // Detect any common prefix.
-  Expect.equals(0, dmp.diff_commonPrefix('abc', 'xyz'), 'diff_commonPrefix: Null case.');
+  expect(0, dmp.diff_commonPrefix('abc', 'xyz'), reason: 'diff_commonPrefix: Null case.');
 
-  Expect.equals(4, dmp.diff_commonPrefix('1234abcdef', '1234xyz'), 'diff_commonPrefix: Non-null case.');
+  expect(4, dmp.diff_commonPrefix('1234abcdef', '1234xyz'), reason: 'diff_commonPrefix: Non-null case.');
 
-  Expect.equals(4, dmp.diff_commonPrefix('1234', '1234xyz'), 'diff_commonPrefix: Whole case.');
+  expect(4, dmp.diff_commonPrefix('1234', '1234xyz'), reason: 'diff_commonPrefix: Whole case.');
 }
 
 void testDiffCommonSuffix() {
   // Detect any common suffix.
-  Expect.equals(0, dmp.diff_commonSuffix('abc', 'xyz'), 'diff_commonSuffix: Null case.');
+  expect(0, dmp.diff_commonSuffix('abc', 'xyz'), reason: 'diff_commonSuffix: Null case.');
 
-  Expect.equals(4, dmp.diff_commonSuffix('abcdef1234', 'xyz1234'), 'diff_commonSuffix: Non-null case.');
+  expect(4, dmp.diff_commonSuffix('abcdef1234', 'xyz1234'), reason: 'diff_commonSuffix: Non-null case.');
 
-  Expect.equals(4, dmp.diff_commonSuffix('1234', 'xyz1234'), 'diff_commonSuffix: Whole case.');
+  expect(4, dmp.diff_commonSuffix('1234', 'xyz1234'), reason: 'diff_commonSuffix: Whole case.');
 }
 
 void testDiffCommonOverlap() {
   // Detect any suffix/prefix overlap.
-  Expect.equals(0, dmp._diff_commonOverlap('', 'abcd'), 'diff_commonOverlap: Null case.');
+  expect(0, dmp._diff_commonOverlap('', 'abcd'), reason: 'diff_commonOverlap: Null case.');
 
-  Expect.equals(3, dmp._diff_commonOverlap('abc', 'abcd'), 'diff_commonOverlap: Whole case.');
+  expect(3, dmp._diff_commonOverlap('abc', 'abcd'), reason: 'diff_commonOverlap: Whole case.');
 
-  Expect.equals(0, dmp._diff_commonOverlap('123456', 'abcd'), 'diff_commonOverlap: No overlap.');
+  expect(0, dmp._diff_commonOverlap('123456', 'abcd'), reason: 'diff_commonOverlap: No overlap.');
 
-  Expect.equals(3, dmp._diff_commonOverlap('123456xxx', 'xxxabcd'), 'diff_commonOverlap: Overlap.');
+  expect(3, dmp._diff_commonOverlap('123456xxx', 'xxxabcd'), reason: 'diff_commonOverlap: Overlap.');
 
   // Some overly clever languages (C#) may treat ligatures as equal to their
   // component letters.  E.g. U+FB01 == 'fi'
-  Expect.equals(0, dmp._diff_commonOverlap('fi', '\ufb01i'), 'diff_commonOverlap: Unicode.');
+  expect(0, dmp._diff_commonOverlap('fi', '\ufb01i'), reason: 'diff_commonOverlap: Unicode.');
 }
 
 void testDiffHalfmatch() {
@@ -109,8 +112,8 @@ void testDiffHalfmatch() {
 
 void testDiffLinesToChars() {
   void assertLinesToCharsResultEquals(Map<String, dynamic> a, Map<String, dynamic> b, String error_msg) {
-    Expect.equals(a['chars1'], b['chars1'], error_msg);
-    Expect.equals(a['chars2'], b['chars2'], error_msg);
+    expect(a['chars1'], b['chars1'], reason: error_msg);
+    expect(a['chars2'], b['chars2'], reason: error_msg);
     Expect.listEquals(a['lineArray'], b['lineArray'], error_msg);
   }
 
@@ -129,10 +132,10 @@ void testDiffLinesToChars() {
     lineList.add('$x\n');
     charList.write(new String.fromCharCodes([x]));
   }
-  Expect.equals(n, lineList.length);
+  expect(n, lineList.length);
   String lines = lineList.join();
   String chars = charList.toString();
-  Expect.equals(n, chars.length);
+  expect(n, chars.length);
   lineList.insertRange(0, 1, '');
   assertLinesToCharsResultEquals({'chars1': chars, 'chars2': '', 'lineArray': lineList}, dmp._diff_linesToChars(lines, ''), 'diff_linesToChars: More than 256.');
 }
@@ -141,7 +144,7 @@ void testDiffCharsToLines() {
   // First check that Diff equality works.
   Expect.isTrue(new Diff(DIFF_EQUAL, 'a') == new Diff(DIFF_EQUAL, 'a'), 'diff_charsToLines: Equality #1.');
 
-  Expect.equals(new Diff(DIFF_EQUAL, 'a'), new Diff(DIFF_EQUAL, 'a'), 'diff_charsToLines: Equality #2.');
+  expect(new Diff(DIFF_EQUAL, 'a'), new Diff(DIFF_EQUAL, 'a'), reason: 'diff_charsToLines: Equality #2.');
 
   // Convert chars up to lines.
   List<Diff> diffs = [new Diff(DIFF_EQUAL, '\u0001\u0002\u0001'), new Diff(DIFF_INSERT, '\u0002\u0001\u0002')];
@@ -156,10 +159,10 @@ void testDiffCharsToLines() {
     lineList.add('$x\n');
     charList.write(new String.fromCharCodes([x]));
   }
-  Expect.equals(n, lineList.length);
+  expect(n, lineList.length);
   String lines = Strings.join(lineList, '');
   String chars = charList.toString();
-  Expect.equals(n, chars.length);
+  expect(n, chars.length);
   lineList.insertRange(0, 1, '');
   diffs = [new Diff(DIFF_DELETE, chars)];
   dmp._diff_charsToLines(diffs, lineList);
@@ -332,24 +335,24 @@ void testDiffCleanupEfficiency() {
 void testDiffPrettyHtml() {
   // Pretty print.
   List<Diff> diffs = [new Diff(DIFF_EQUAL, 'a\n'), new Diff(DIFF_DELETE, '<B>b</B>'), new Diff(DIFF_INSERT, 'c&d')];
-  Expect.equals('<span>a&para;<br></span><del style="background:#ffe6e6;">&lt;B&gt;b&lt;/B&gt;</del><ins style="background:#e6ffe6;">c&amp;d</ins>', dmp.diff_prettyHtml(diffs), 'diff_prettyHtml:');
+  expect('<span>a&para;<br></span><del style="background:#ffe6e6;">&lt;B&gt;b&lt;/B&gt;</del><ins style="background:#e6ffe6;">c&amp;d</ins>', dmp.diff_prettyHtml(diffs), 'diff_prettyHtml:');
 }
 
 void testDiffText() {
   // Compute the source and destination texts.
   List<Diff> diffs = [new Diff(DIFF_EQUAL, 'jump'), new Diff(DIFF_DELETE, 's'), new Diff(DIFF_INSERT, 'ed'), new Diff(DIFF_EQUAL, ' over '), new Diff(DIFF_DELETE, 'the'), new Diff(DIFF_INSERT, 'a'), new Diff(DIFF_EQUAL, ' lazy')];
-  Expect.equals('jumps over the lazy', dmp.diff_text1(diffs), 'diff_text1:');
-  Expect.equals('jumped over a lazy', dmp.diff_text2(diffs), 'diff_text2:');
+  expect('jumps over the lazy', dmp.diff_text1(diffs), reason: 'diff_text1:');
+  expect('jumped over a lazy', dmp.diff_text2(diffs), reason: 'diff_text2:');
 }
 
 void testDiffDelta() {
   // Convert a diff into delta string.
   List<Diff> diffs = [new Diff(DIFF_EQUAL, 'jump'), new Diff(DIFF_DELETE, 's'), new Diff(DIFF_INSERT, 'ed'), new Diff(DIFF_EQUAL, ' over '), new Diff(DIFF_DELETE, 'the'), new Diff(DIFF_INSERT, 'a'), new Diff(DIFF_EQUAL, ' lazy'), new Diff(DIFF_INSERT, 'old dog')];
   String text1 = dmp.diff_text1(diffs);
-  Expect.equals('jumps over the lazy', text1, 'diff_text1: Base text.');
+  expect('jumps over the lazy', text1, reason: 'diff_text1: Base text.');
 
   String delta = dmp.diff_toDelta(diffs);
-  Expect.equals('=4\t-1\t+ed\t=6\t-3\t+a\t=5\t+old dog', delta, 'diff_toDelta:');
+  expect('=4\t-1\t+ed\t=6\t-3\t+a\t=5\t+old dog', delta, reason: 'diff_toDelta:');
 
   // Convert delta string into a diff.
   Expect.listEquals(diffs, dmp.diff_fromDelta(text1, delta), 'diff_fromDelta: Normal.');
@@ -366,20 +369,20 @@ void testDiffDelta() {
   // Test deltas with special characters.
   diffs = [new Diff(DIFF_EQUAL, '\u0680 \x00 \t %'), new Diff(DIFF_DELETE, '\u0681 \x01 \n ^'), new Diff(DIFF_INSERT, '\u0682 \x02 \\ |')];
   text1 = dmp.diff_text1(diffs);
-  Expect.equals('\u0680 \x00 \t %\u0681 \x01 \n ^', text1, 'diff_text1: Unicode text.');
+  expect('\u0680 \x00 \t %\u0681 \x01 \n ^', text1, reason: 'diff_text1: Unicode text.');
 
   delta = dmp.diff_toDelta(diffs);
-  Expect.equals('=7\t-7\t+%DA%82 %02 %5C %7C', delta, 'diff_toDelta: Unicode.');
+  expect('=7\t-7\t+%DA%82 %02 %5C %7C', delta, reason: 'diff_toDelta: Unicode.');
 
   Expect.listEquals(diffs, dmp.diff_fromDelta(text1, delta), 'diff_fromDelta: Unicode.');
 
   // Verify pool of unchanged characters.
   diffs = [new Diff(DIFF_INSERT, 'A-Z a-z 0-9 - _ . ! ~ * \' ( ) ; / ? : @ & = + \$ , # ')];
   String text2 = dmp.diff_text2(diffs);
-  Expect.equals('A-Z a-z 0-9 - _ . ! ~ * \' ( ) ; / ? : @ & = + \$ , # ', text2, 'diff_text2: Unchanged characters.');
+  expect('A-Z a-z 0-9 - _ . ! ~ * \' ( ) ; / ? : @ & = + \$ , # ', text2, reason: 'diff_text2: Unchanged characters.');
 
   delta = dmp.diff_toDelta(diffs);
-  Expect.equals('+A-Z a-z 0-9 - _ . ! ~ * \' ( ) ; / ? : @ & = + \$ , # ', delta, 'diff_toDelta: Unchanged characters.');
+  expect('+A-Z a-z 0-9 - _ . ! ~ * \' ( ) ; / ? : @ & = + \$ , # ', delta, reason: 'diff_toDelta: Unchanged characters.');
 
   // Convert delta string into a diff.
   Expect.listEquals(diffs, dmp.diff_fromDelta('', delta), 'diff_fromDelta: Unchanged characters.');
@@ -388,21 +391,21 @@ void testDiffDelta() {
 void testDiffXIndex() {
   // Translate a location in text1 to text2.
   List<Diff> diffs = [new Diff(DIFF_DELETE, 'a'), new Diff(DIFF_INSERT, '1234'), new Diff(DIFF_EQUAL, 'xyz')];
-  Expect.equals(5, dmp.diff_xIndex(diffs, 2), 'diff_xIndex: Translation on equality.');
+  expect(5, dmp.diff_xIndex(diffs, 2), reason: 'diff_xIndex: Translation on equality.');
 
   diffs = [new Diff(DIFF_EQUAL, 'a'), new Diff(DIFF_DELETE, '1234'), new Diff(DIFF_EQUAL, 'xyz')];
-  Expect.equals(1, dmp.diff_xIndex(diffs, 3), 'diff_xIndex: Translation on deletion.');
+  expect(1, dmp.diff_xIndex(diffs, 3), reason: 'diff_xIndex: Translation on deletion.');
 }
 
 void testDiffLevenshtein() {
   List<Diff> diffs = [new Diff(DIFF_DELETE, 'abc'), new Diff(DIFF_INSERT, '1234'), new Diff(DIFF_EQUAL, 'xyz')];
-  Expect.equals(4, dmp.diff_levenshtein(diffs), 'Levenshtein with trailing equality.');
+  expect(4, dmp.diff_levenshtein(diffs), reason: 'Levenshtein with trailing equality.');
 
   diffs = [new Diff(DIFF_EQUAL, 'xyz'), new Diff(DIFF_DELETE, 'abc'), new Diff(DIFF_INSERT, '1234')];
-  Expect.equals(4, dmp.diff_levenshtein(diffs), 'Levenshtein with leading equality.');
+  expect(4, dmp.diff_levenshtein(diffs), reason: 'Levenshtein with leading equality.');
 
   diffs = [new Diff(DIFF_DELETE, 'abc'), new Diff(DIFF_EQUAL, 'xyz'), new Diff(DIFF_INSERT, '1234')];
-  Expect.equals(7, dmp.diff_levenshtein(diffs), 'Levenshtein with middle equality.');
+  expect(7, dmp.diff_levenshtein(diffs), reason: 'Levenshtein with middle equality.');
 }
 
 void testDiffBisect() {
@@ -519,7 +522,7 @@ void testMatchAlphabet() {
   void assertMapEquals(Map a, Map b, String error_msg) {
     Expect.setEquals(a.keys, b.keys, error_msg);
     for (var x in a.keys) {
-      Expect.equals(a[x], b[x], "$error_msg [Key: $x]");
+      expect(a[x], b[x], reason: "$error_msg [Key: $x]");
     }
   }
 
@@ -535,63 +538,63 @@ void testMatchBitap() {
   // Bitap algorithm.
   dmp.Match_Distance = 100;
   dmp.Match_Threshold = 0.5;
-  Expect.equals(5, dmp._match_bitap('abcdefghijk', 'fgh', 5), 'match_bitap: Exact match #1.');
+  expect(5, dmp._match_bitap('abcdefghijk', 'fgh', 5), reason: 'match_bitap: Exact match #1.');
 
-  Expect.equals(5, dmp._match_bitap('abcdefghijk', 'fgh', 0), 'match_bitap: Exact match #2.');
+  expect(5, dmp._match_bitap('abcdefghijk', 'fgh', 0), reason: 'match_bitap: Exact match #2.');
 
-  Expect.equals(4, dmp._match_bitap('abcdefghijk', 'efxhi', 0), 'match_bitap: Fuzzy match #1.');
+  expect(4, dmp._match_bitap('abcdefghijk', 'efxhi', 0), reason: 'match_bitap: Fuzzy match #1.');
 
-  Expect.equals(2, dmp._match_bitap('abcdefghijk', 'cdefxyhijk', 5), 'match_bitap: Fuzzy match #2.');
+  expect(2, dmp._match_bitap('abcdefghijk', 'cdefxyhijk', 5), reason: 'match_bitap: Fuzzy match #2.');
 
-  Expect.equals(-1, dmp._match_bitap('abcdefghijk', 'bxy', 1), 'match_bitap: Fuzzy match #3.');
+  expect(-1, dmp._match_bitap('abcdefghijk', 'bxy', 1), reason: 'match_bitap: Fuzzy match #3.');
 
-  Expect.equals(2, dmp._match_bitap('123456789xx0', '3456789x0', 2), 'match_bitap: Overflow.');
+  expect(2, dmp._match_bitap('123456789xx0', '3456789x0', 2), reason: 'match_bitap: Overflow.');
 
-  Expect.equals(0, dmp._match_bitap('abcdef', 'xxabc', 4), 'match_bitap: Before start match.');
+  expect(0, dmp._match_bitap('abcdef', 'xxabc', 4), reason: 'match_bitap: Before start match.');
 
-  Expect.equals(3, dmp._match_bitap('abcdef', 'defyy', 4), 'match_bitap: Beyond end match.');
+  expect(3, dmp._match_bitap('abcdef', 'defyy', 4), reason: 'match_bitap: Beyond end match.');
 
-  Expect.equals(0, dmp._match_bitap('abcdef', 'xabcdefy', 0), 'match_bitap: Oversized pattern.');
+  expect(0, dmp._match_bitap('abcdef', 'xabcdefy', 0), reason: 'match_bitap: Oversized pattern.');
 
   dmp.Match_Threshold = 0.4;
-  Expect.equals(4, dmp._match_bitap('abcdefghijk', 'efxyhi', 1), 'match_bitap: Threshold #1.');
+  expect(4, dmp._match_bitap('abcdefghijk', 'efxyhi', 1), reason: 'match_bitap: Threshold #1.');
 
   dmp.Match_Threshold = 0.3;
-  Expect.equals(-1, dmp._match_bitap('abcdefghijk', 'efxyhi', 1), 'match_bitap: Threshold #2.');
+  expect(-1, dmp._match_bitap('abcdefghijk', 'efxyhi', 1), reason: 'match_bitap: Threshold #2.');
 
   dmp.Match_Threshold = 0.0;
-  Expect.equals(1, dmp._match_bitap('abcdefghijk', 'bcdef', 1), 'match_bitap: Threshold #3.');
+  expect(1, dmp._match_bitap('abcdefghijk', 'bcdef', 1), reason: 'match_bitap: Threshold #3.');
 
   dmp.Match_Threshold = 0.5;
-  Expect.equals(0, dmp._match_bitap('abcdexyzabcde', 'abccde', 3), 'match_bitap: Multiple select #1.');
+  expect(0, dmp._match_bitap('abcdexyzabcde', 'abccde', 3), reason: 'match_bitap: Multiple select #1.');
 
-  Expect.equals(8, dmp._match_bitap('abcdexyzabcde', 'abccde', 5), 'match_bitap: Multiple select #2.');
+  expect(8, dmp._match_bitap('abcdexyzabcde', 'abccde', 5), reason: 'match_bitap: Multiple select #2.');
 
   dmp.Match_Distance = 10;  // Strict location.
-  Expect.equals(-1, dmp._match_bitap('abcdefghijklmnopqrstuvwxyz', 'abcdefg', 24), 'match_bitap: Distance test #1.');
+  expect(-1, dmp._match_bitap('abcdefghijklmnopqrstuvwxyz', 'abcdefg', 24), reason: 'match_bitap: Distance test #1.');
 
-  Expect.equals(0, dmp._match_bitap('abcdefghijklmnopqrstuvwxyz', 'abcdxxefg', 1), 'match_bitap: Distance test #2.');
+  expect(0, dmp._match_bitap('abcdefghijklmnopqrstuvwxyz', 'abcdxxefg', 1), reason: 'match_bitap: Distance test #2.');
 
   dmp.Match_Distance = 1000;  // Loose location.
-  Expect.equals(0, dmp._match_bitap('abcdefghijklmnopqrstuvwxyz', 'abcdefg', 24), 'match_bitap: Distance test #3.');
+  expect(0, dmp._match_bitap('abcdefghijklmnopqrstuvwxyz', 'abcdefg', 24), reason: 'match_bitap: Distance test #3.');
 }
 
 void testMatchMain() {
   // Full match.
-  Expect.equals(0, dmp.match_main('abcdef', 'abcdef', 1000), 'match_main: Equality.');
+  expect(0, dmp.match_main('abcdef', 'abcdef', 1000), reason: 'match_main: Equality.');
 
-  Expect.equals(-1, dmp.match_main('', 'abcdef', 1), 'match_main: Null text.');
+  expect(-1, dmp.match_main('', 'abcdef', 1), reason: 'match_main: Null text.');
 
-  Expect.equals(3, dmp.match_main('abcdef', '', 3), 'match_main: Null pattern.');
+  expect(3, dmp.match_main('abcdef', '', 3), reason: 'match_main: Null pattern.');
 
-  Expect.equals(3, dmp.match_main('abcdef', 'de', 3), 'match_main: Exact match.');
+  expect(3, dmp.match_main('abcdef', 'de', 3), reason: 'match_main: Exact match.');
 
-  Expect.equals(3, dmp.match_main('abcdef', 'defy', 4), 'match_main: Beyond end match.');
+  expect(3, dmp.match_main('abcdef', 'defy', 4), reason: 'match_main: Beyond end match.');
 
-  Expect.equals(0, dmp.match_main('abcdef', 'abcdefy', 0), 'match_main: Oversized pattern.');
+  expect(0, dmp.match_main('abcdef', 'abcdefy', 0), reason: 'match_main: Oversized pattern.');
 
   dmp.Match_Threshold = 0.7;
-  Expect.equals(4, dmp.match_main('I am the very model of a modern major general.', ' that berry ', 5), 'match_main: Complex match.');
+  expect(4, dmp.match_main('I am the very model of a modern major general.', ' that berry ', 5), reason: 'match_main: Complex match.');
   dmp.Match_Threshold = 0.5;
 
   // Test null inputs.
@@ -611,20 +614,20 @@ void testPatchObj() {
   p.length2 = 17;
   p.diffs = [new Diff(DIFF_EQUAL, 'jump'), new Diff(DIFF_DELETE, 's'), new Diff(DIFF_INSERT, 'ed'), new Diff(DIFF_EQUAL, ' over '), new Diff(DIFF_DELETE, 'the'), new Diff(DIFF_INSERT, 'a'), new Diff(DIFF_EQUAL, '\nlaz')];
   String strp = '@@ -21,18 +22,17 @@\n jump\n-s\n+ed\n  over \n-the\n+a\n %0Alaz\n';
-  Expect.equals(strp, p.toString(), 'Patch: toString.');
+  expect(strp, p.toString(), reason: 'Patch: toString.');
 }
 
 void testPatchFromText() {
   Expect.isTrue(dmp.patch_fromText('').isEmpty, 'patch_fromText: #0.');
 
   String strp = '@@ -21,18 +22,17 @@\n jump\n-s\n+ed\n  over \n-the\n+a\n %0Alaz\n';
-  Expect.equals(strp, dmp.patch_fromText(strp)[0].toString(), 'patch_fromText: #1.');
+  expect(strp, dmp.patch_fromText(strp)[0].toString(), reason: 'patch_fromText: #1.');
 
-  Expect.equals('@@ -1 +1 @@\n-a\n+b\n', dmp.patch_fromText('@@ -1 +1 @@\n-a\n+b\n')[0].toString(), 'patch_fromText: #2.');
+  expect('@@ -1 +1 @@\n-a\n+b\n', dmp.patch_fromText('@@ -1 +1 @@\n-a\n+b\n')[0].toString(), reason: 'patch_fromText: #2.');
 
-  Expect.equals('@@ -1,3 +0,0 @@\n-abc\n', dmp.patch_fromText('@@ -1,3 +0,0 @@\n-abc\n')[0].toString(), 'patch_fromText: #3.');
+  expect('@@ -1,3 +0,0 @@\n-abc\n', dmp.patch_fromText('@@ -1,3 +0,0 @@\n-abc\n')[0].toString(), reason: 'patch_fromText: #3.');
 
-  Expect.equals('@@ -0,0 +1,3 @@\n+abc\n', dmp.patch_fromText('@@ -0,0 +1,3 @@\n+abc\n')[0].toString(), 'patch_fromText: #4.');
+  expect('@@ -0,0 +1,3 @@\n+abc\n', dmp.patch_fromText('@@ -0,0 +1,3 @@\n+abc\n')[0].toString(), reason: 'patch_fromText: #4.');
 
   // Generates error.
   Expect.throws(() => dmp.patch_fromText('Bad\nPatch\n'), null, 'patch_fromText: #5.');
@@ -634,11 +637,11 @@ void testPatchToText() {
   String strp = '@@ -21,18 +22,17 @@\n jump\n-s\n+ed\n  over \n-the\n+a\n  laz\n';
   List<Patch> patches;
   patches = dmp.patch_fromText(strp);
-  Expect.equals(strp, dmp.patch_toText(patches), 'patch_toText: Single.');
+  expect(strp, dmp.patch_toText(patches), reason: 'patch_toText: Single.');
 
   strp = '@@ -1,9 +1,9 @@\n-f\n+F\n oo+fooba\n@@ -7,9 +7,9 @@\n obar\n-,\n+.\n  tes\n';
   patches = dmp.patch_fromText(strp);
-  Expect.equals(strp, dmp.patch_toText(patches), 'patch_toText: Dual.');
+  expect(strp, dmp.patch_toText(patches), reason: 'patch_toText: Dual.');
 }
 
 void testPatchAddContext() {
@@ -646,49 +649,49 @@ void testPatchAddContext() {
   Patch p;
   p = dmp.patch_fromText('@@ -21,4 +21,10 @@\n-jump\n+somersault\n')[0];
   dmp._patch_addContext(p, 'The quick brown fox jumps over the lazy dog.');
-  Expect.equals('@@ -17,12 +17,18 @@\n fox \n-jump\n+somersault\n s ov\n', p.toString(), 'patch_addContext: Simple case.');
+  expect('@@ -17,12 +17,18 @@\n fox \n-jump\n+somersault\n s ov\n', p.toString(), reason: 'patch_addContext: Simple case.');
 
   p = dmp.patch_fromText('@@ -21,4 +21,10 @@\n-jump\n+somersault\n')[0];
   dmp._patch_addContext(p, 'The quick brown fox jumps.');
-  Expect.equals('@@ -17,10 +17,16 @@\n fox \n-jump\n+somersault\n s.\n', p.toString(), 'patch_addContext: Not enough trailing context.');
+  expect('@@ -17,10 +17,16 @@\n fox \n-jump\n+somersault\n s.\n', p.toString(), reason: 'patch_addContext: Not enough trailing context.');
 
   p = dmp.patch_fromText('@@ -3 +3,2 @@\n-e\n+at\n')[0];
   dmp._patch_addContext(p, 'The quick brown fox jumps.');
-  Expect.equals('@@ -1,7 +1,8 @@\n Th\n-e\n+at\n  qui\n', p.toString(), 'patch_addContext: Not enough leading context.');
+  expect('@@ -1,7 +1,8 @@\n Th\n-e\n+at\n  qui\n', p.toString(), reason: 'patch_addContext: Not enough leading context.');
 
   p = dmp.patch_fromText('@@ -3 +3,2 @@\n-e\n+at\n')[0];
   dmp._patch_addContext(p, 'The quick brown fox jumps.  The quick brown fox crashes.');
-  Expect.equals('@@ -1,27 +1,28 @@\n Th\n-e\n+at\n  quick brown fox jumps. \n', p.toString(), 'patch_addContext: Ambiguity.');
+  expect('@@ -1,27 +1,28 @@\n Th\n-e\n+at\n  quick brown fox jumps. \n', p.toString(), reason: 'patch_addContext: Ambiguity.');
 }
 
 void testPatchMake() {
   List<Patch> patches;
   patches = dmp.patch_make('', '');
-  Expect.equals('', dmp.patch_toText(patches), 'patch_make: Null case.');
+  expect('', dmp.patch_toText(patches), reason: 'patch_make: Null case.');
 
   String text1 = 'The quick brown fox jumps over the lazy dog.';
   String text2 = 'That quick brown fox jumped over a lazy dog.';
   String expectedPatch = '@@ -1,8 +1,7 @@\n Th\n-at\n+e\n  qui\n@@ -21,17 +21,18 @@\n jump\n-ed\n+s\n  over \n-a\n+the\n  laz\n';
   // The second patch must be '-21,17 +21,18', not '-22,17 +21,18' due to rolling context.
   patches = dmp.patch_make(text2, text1);
-  Expect.equals(expectedPatch, dmp.patch_toText(patches), 'patch_make: Text2+Text1 inputs.');
+  expect(expectedPatch, dmp.patch_toText(patches), reason: 'patch_make: Text2+Text1 inputs.');
 
   expectedPatch = '@@ -1,11 +1,12 @@\n Th\n-e\n+at\n  quick b\n@@ -22,18 +22,17 @@\n jump\n-s\n+ed\n  over \n-the\n+a\n  laz\n';
   patches = dmp.patch_make(text1, text2);
-  Expect.equals(expectedPatch, dmp.patch_toText(patches), 'patch_make: Text1+Text2 inputs.');
+  expect(expectedPatch, dmp.patch_toText(patches), reason: 'patch_make: Text1+Text2 inputs.');
 
   List<Diff> diffs = dmp.diff_main(text1, text2, false);
   patches = dmp.patch_make(diffs);
-  Expect.equals(expectedPatch, dmp.patch_toText(patches), 'patch_make: Diff input.');
+  expect(expectedPatch, dmp.patch_toText(patches), reason: 'patch_make: Diff input.');
 
   patches = dmp.patch_make(text1, diffs);
-  Expect.equals(expectedPatch, dmp.patch_toText(patches), 'patch_make: Text1+Diff inputs.');
+  expect(expectedPatch, dmp.patch_toText(patches), reason: 'patch_make: Text1+Diff inputs.');
 
   patches = dmp.patch_make(text1, text2, diffs);
-  Expect.equals(expectedPatch, dmp.patch_toText(patches), 'patch_make: Text1+Text2+Diff inputs (deprecated).');
+  expect(expectedPatch, dmp.patch_toText(patches), reason: 'patch_make: Text1+Text2+Diff inputs (deprecated).');
 
   patches = dmp.patch_make('`1234567890-=[]\\;\',./', '~!@#\$%^&*()_+{}|:"<>?');
-  Expect.equals('@@ -1,21 +1,21 @@\n-%601234567890-=%5B%5D%5C;\',./\n+~!@#\$%25%5E&*()_+%7B%7D%7C:%22%3C%3E?\n', dmp.patch_toText(patches), 'patch_toText: Character encoding.');
+  expect('@@ -1,21 +1,21 @@\n-%601234567890-=%5B%5D%5C;\',./\n+~!@#\$%25%5E&*()_+%7B%7D%7C:%22%3C%3E?\n', dmp.patch_toText(patches), reason: 'patch_toText: Character encoding.');
 
   diffs = [new Diff(DIFF_DELETE, '`1234567890-=[]\\;\',./'), new Diff(DIFF_INSERT, '~!@#\$%^&*()_+{}|:"<>?')];
   Expect.listEquals(diffs, dmp.patch_fromText('@@ -1,21 +1,21 @@\n-%601234567890-=%5B%5D%5C;\',./\n+~!@#\$%25%5E&*()_+%7B%7D%7C:%22%3C%3E?\n')[0].diffs, 'patch_fromText: Character decoding.');
@@ -701,7 +704,7 @@ void testPatchMake() {
   text2 = '${text1}123';
   expectedPatch = '@@ -573,28 +573,31 @@\n cdefabcdefabcdefabcdefabcdef\n+123\n';
   patches = dmp.patch_make(text1, text2);
-  Expect.equals(expectedPatch, dmp.patch_toText(patches), 'patch_make: Long string with repeats.');
+  expect(expectedPatch, dmp.patch_toText(patches), reason: 'patch_make: Long string with repeats.');
 
   // Test null inputs.
   Expect.throws(() => dmp.patch_make(null), null, 'patch_make: Null inputs.');
@@ -712,38 +715,38 @@ void testPatchSplitMax() {
   List<Patch> patches;
   patches = dmp.patch_make('abcdefghijklmnopqrstuvwxyz01234567890', 'XabXcdXefXghXijXklXmnXopXqrXstXuvXwxXyzX01X23X45X67X89X0');
   dmp.patch_splitMax(patches);
-  Expect.equals('@@ -1,32 +1,46 @@\n+X\n ab\n+X\n cd\n+X\n ef\n+X\n gh\n+X\n ij\n+X\n kl\n+X\n mn\n+X\n op\n+X\n qr\n+X\n st\n+X\n uv\n+X\n wx\n+X\n yz\n+X\n 012345\n@@ -25,13 +39,18 @@\n zX01\n+X\n 23\n+X\n 45\n+X\n 67\n+X\n 89\n+X\n 0\n', dmp.patch_toText(patches), 'patch_splitMax: #1.');
+  expect('@@ -1,32 +1,46 @@\n+X\n ab\n+X\n cd\n+X\n ef\n+X\n gh\n+X\n ij\n+X\n kl\n+X\n mn\n+X\n op\n+X\n qr\n+X\n st\n+X\n uv\n+X\n wx\n+X\n yz\n+X\n 012345\n@@ -25,13 +39,18 @@\n zX01\n+X\n 23\n+X\n 45\n+X\n 67\n+X\n 89\n+X\n 0\n', dmp.patch_toText(patches), reason: 'patch_splitMax: #1.');
 
   patches = dmp.patch_make('abcdef1234567890123456789012345678901234567890123456789012345678901234567890uvwxyz', 'abcdefuvwxyz');
   String oldToText = dmp.patch_toText(patches);
   dmp.patch_splitMax(patches);
-  Expect.equals(oldToText, dmp.patch_toText(patches), 'patch_splitMax: #2.');
+  expect(oldToText, dmp.patch_toText(patches), reason: 'patch_splitMax: #2.');
 
   patches = dmp.patch_make('1234567890123456789012345678901234567890123456789012345678901234567890', 'abc');
   dmp.patch_splitMax(patches);
-  Expect.equals('@@ -1,32 +1,4 @@\n-1234567890123456789012345678\n 9012\n@@ -29,32 +1,4 @@\n-9012345678901234567890123456\n 7890\n@@ -57,14 +1,3 @@\n-78901234567890\n+abc\n', dmp.patch_toText(patches), 'patch_splitMax: #3.');
+  expect('@@ -1,32 +1,4 @@\n-1234567890123456789012345678\n 9012\n@@ -29,32 +1,4 @@\n-9012345678901234567890123456\n 7890\n@@ -57,14 +1,3 @@\n-78901234567890\n+abc\n', dmp.patch_toText(patches), reason: 'patch_splitMax: #3.');
 
   patches = dmp.patch_make('abcdefghij , h : 0 , t : 1 abcdefghij , h : 0 , t : 1 abcdefghij , h : 0 , t : 1', 'abcdefghij , h : 1 , t : 1 abcdefghij , h : 1 , t : 1 abcdefghij , h : 0 , t : 1');
   dmp.patch_splitMax(patches);
-  Expect.equals('@@ -2,32 +2,32 @@\n bcdefghij , h : \n-0\n+1\n  , t : 1 abcdef\n@@ -29,32 +29,32 @@\n bcdefghij , h : \n-0\n+1\n  , t : 1 abcdef\n', dmp.patch_toText(patches), 'patch_splitMax: #4.');
+  expect('@@ -2,32 +2,32 @@\n bcdefghij , h : \n-0\n+1\n  , t : 1 abcdef\n@@ -29,32 +29,32 @@\n bcdefghij , h : \n-0\n+1\n  , t : 1 abcdef\n', dmp.patch_toText(patches), reason: 'patch_splitMax: #4.');
 }
 
 void testPatchAddPadding() {
   List<Patch> patches;
   patches = dmp.patch_make('', 'test');
-  Expect.equals('@@ -0,0 +1,4 @@\n+test\n', dmp.patch_toText(patches), 'patch_addPadding: Both edges full.');
+  expect('@@ -0,0 +1,4 @@\n+test\n', dmp.patch_toText(patches), reason: 'patch_addPadding: Both edges full.');
   dmp.patch_addPadding(patches);
-  Expect.equals('@@ -1,8 +1,12 @@\n %01%02%03%04\n+test\n %01%02%03%04\n', dmp.patch_toText(patches), 'patch_addPadding: Both edges full.');
+  expect('@@ -1,8 +1,12 @@\n %01%02%03%04\n+test\n %01%02%03%04\n', dmp.patch_toText(patches), reason: 'patch_addPadding: Both edges full.');
 
   patches = dmp.patch_make('XY', 'XtestY');
-  Expect.equals('@@ -1,2 +1,6 @@\n X\n+test\n Y\n', dmp.patch_toText(patches), 'patch_addPadding: Both edges partial.');
+  expect('@@ -1,2 +1,6 @@\n X\n+test\n Y\n', dmp.patch_toText(patches), reason: 'patch_addPadding: Both edges partial.');
   dmp.patch_addPadding(patches);
-  Expect.equals('@@ -2,8 +2,12 @@\n %02%03%04X\n+test\n Y%01%02%03\n', dmp.patch_toText(patches), 'patch_addPadding: Both edges partial.');
+  expect('@@ -2,8 +2,12 @@\n %02%03%04X\n+test\n Y%01%02%03\n', dmp.patch_toText(patches), reason: 'patch_addPadding: Both edges partial.');
 
   patches = dmp.patch_make('XXXXYYYY', 'XXXXtestYYYY');
-  Expect.equals('@@ -1,8 +1,12 @@\n XXXX\n+test\n YYYY\n', dmp.patch_toText(patches), 'patch_addPadding: Both edges none.');
+  expect('@@ -1,8 +1,12 @@\n XXXX\n+test\n YYYY\n', dmp.patch_toText(patches), reason: 'patch_addPadding: Both edges none.');
   dmp.patch_addPadding(patches);
-  Expect.equals('@@ -5,8 +5,12 @@\n XXXX\n+test\n YYYY\n', dmp.patch_toText(patches), 'patch_addPadding: Both edges none.');
+  expect('@@ -5,8 +5,12 @@\n XXXX\n+test\n YYYY\n', dmp.patch_toText(patches), reason: 'patch_addPadding: Both edges none.');
 }
 
 void testPatchApply() {
@@ -755,42 +758,42 @@ void testPatchApply() {
   List results = dmp.patch_apply(patches, 'Hello world.');
   List boolArray = results[1];
   String resultStr = '${results[0]}\t${boolArray.length}';
-  Expect.equals('Hello world.\t0', resultStr, 'patch_apply: Null case.');
+  expect('Hello world.\t0', resultStr, reason: 'patch_apply: Null case.');
 
   patches = dmp.patch_make('The quick brown fox jumps over the lazy dog.', 'That quick brown fox jumped over a lazy dog.');
   results = dmp.patch_apply(patches, 'The quick brown fox jumps over the lazy dog.');
   boolArray = results[1];
   resultStr = '${results[0]}\t${boolArray[0]}\t${boolArray[1]}';
-  Expect.equals('That quick brown fox jumped over a lazy dog.\ttrue\ttrue', resultStr, 'patch_apply: Exact match.');
+  expect('That quick brown fox jumped over a lazy dog.\ttrue\ttrue', resultStr, reason: 'patch_apply: Exact match.');
 
   results = dmp.patch_apply(patches, 'The quick red rabbit jumps over the tired tiger.');
   boolArray = results[1];
   resultStr = '${results[0]}\t${boolArray[0]}\t${boolArray[1]}';
-  Expect.equals('That quick red rabbit jumped over a tired tiger.\ttrue\ttrue', resultStr, 'patch_apply: Partial match.');
+  expect('That quick red rabbit jumped over a tired tiger.\ttrue\ttrue', resultStr, reason: 'patch_apply: Partial match.');
 
   results = dmp.patch_apply(patches, 'I am the very model of a modern major general.');
   boolArray = results[1];
   resultStr = '${results[0]}\t${boolArray[0]}\t${boolArray[1]}';
-  Expect.equals('I am the very model of a modern major general.\tfalse\tfalse', resultStr, 'patch_apply: Failed match.');
+  expect('I am the very model of a modern major general.\tfalse\tfalse', resultStr, reason: 'patch_apply: Failed match.');
 
   patches = dmp.patch_make('x1234567890123456789012345678901234567890123456789012345678901234567890y', 'xabcy');
   results = dmp.patch_apply(patches, 'x123456789012345678901234567890-----++++++++++-----123456789012345678901234567890y');
   boolArray = results[1];
   resultStr = '${results[0]}\t${boolArray[0]}\t${boolArray[1]}';
-  Expect.equals('xabcy\ttrue\ttrue', resultStr, 'patch_apply: Big delete, small change.');
+  expect('xabcy\ttrue\ttrue', resultStr, reason: 'patch_apply: Big delete, small change.');
 
   patches = dmp.patch_make('x1234567890123456789012345678901234567890123456789012345678901234567890y', 'xabcy');
   results = dmp.patch_apply(patches, 'x12345678901234567890---------------++++++++++---------------12345678901234567890y');
   boolArray = results[1];
   resultStr = '${results[0]}\t${boolArray[0]}\t${boolArray[1]}';
-  Expect.equals('xabc12345678901234567890---------------++++++++++---------------12345678901234567890y\tfalse\ttrue', resultStr, 'patch_apply: Big delete, big change 1.');
+  expect('xabc12345678901234567890---------------++++++++++---------------12345678901234567890y\tfalse\ttrue', resultStr, reason: 'patch_apply: Big delete, big change 1.');
 
   dmp.Patch_DeleteThreshold = 0.6;
   patches = dmp.patch_make('x1234567890123456789012345678901234567890123456789012345678901234567890y', 'xabcy');
   results = dmp.patch_apply(patches, 'x12345678901234567890---------------++++++++++---------------12345678901234567890y');
   boolArray = results[1];
   resultStr = '${results[0]}\t${boolArray[0]}\t${boolArray[1]}';
-  Expect.equals('xabcy\ttrue\ttrue', resultStr, 'patch_apply: Big delete, big change 2.');
+  expect('xabcy\ttrue\ttrue', resultStr, reason: 'patch_apply: Big delete, big change 2.');
   dmp.Patch_DeleteThreshold = 0.5;
 
   // Compensate for failed patch.
@@ -800,37 +803,37 @@ void testPatchApply() {
   results = dmp.patch_apply(patches, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ--------------------1234567890');
   boolArray = results[1];
   resultStr = '${results[0]}\t${boolArray[0]}\t${boolArray[1]}';
-  Expect.equals('ABCDEFGHIJKLMNOPQRSTUVWXYZ--------------------1234567YYYYYYYYYY890\tfalse\ttrue', resultStr, 'patch_apply: Compensate for failed patch.');
+  expect('ABCDEFGHIJKLMNOPQRSTUVWXYZ--------------------1234567YYYYYYYYYY890\tfalse\ttrue', resultStr, reason: 'patch_apply: Compensate for failed patch.');
   dmp.Match_Threshold = 0.5;
   dmp.Match_Distance = 1000;
 
   patches = dmp.patch_make('', 'test');
   String patchStr = dmp.patch_toText(patches);
   dmp.patch_apply(patches, '');
-  Expect.equals(patchStr, dmp.patch_toText(patches), 'patch_apply: No side effects.');
+  expect(patchStr, dmp.patch_toText(patches), reason: 'patch_apply: No side effects.');
 
   patches = dmp.patch_make('The quick brown fox jumps over the lazy dog.', 'Woof');
   patchStr = dmp.patch_toText(patches);
   dmp.patch_apply(patches, 'The quick brown fox jumps over the lazy dog.');
-  Expect.equals(patchStr, dmp.patch_toText(patches), 'patch_apply: No side effects with major delete.');
+  expect(patchStr, dmp.patch_toText(patches), reason: 'patch_apply: No side effects with major delete.');
 
   patches = dmp.patch_make('', 'test');
   results = dmp.patch_apply(patches, '');
   boolArray = results[1];
   resultStr = '${results[0]}\t${boolArray[0]}';
-  Expect.equals('test\ttrue', resultStr, 'patch_apply: Edge exact match.');
+  expect('test\ttrue', resultStr, reason: 'patch_apply: Edge exact match.');
 
   patches = dmp.patch_make('XY', 'XtestY');
   results = dmp.patch_apply(patches, 'XY');
   boolArray = results[1];
   resultStr = '${results[0]}\t${boolArray[0]}';
-  Expect.equals('XtestY\ttrue', resultStr, 'patch_apply: Near edge exact match.');
+  expect('XtestY\ttrue', resultStr, reason: 'patch_apply: Near edge exact match.');
 
   patches = dmp.patch_make('y', 'y123');
   results = dmp.patch_apply(patches, 'x');
   boolArray = results[1];
   resultStr = '${results[0]}\t${boolArray[0]}';
-  Expect.equals('x123\ttrue', resultStr, 'patch_apply: Edge partial match.');
+  expect('x123\ttrue', resultStr, reason: 'patch_apply: Edge partial match.');
 }
 
 // Run each test.
