@@ -98,10 +98,10 @@ class DiffMatchPatch {
    * Returns a List of Diff objects.
    */
   List<Diff> diff_main(String text1, String text2,
-                       [bool checklines = true, Date deadline]) {
+                       [bool checklines = true, DateTime deadline]) {
     // Set a deadline by which time the diff must be complete.
     if (deadline == null) {
-      deadline = new Date.now();
+      deadline = new DateTime.now();
       if (Diff_Timeout <= 0) {
         // One year should be sufficient for 'infinity'.
         deadline = deadline.add(new Duration(days: 365));
