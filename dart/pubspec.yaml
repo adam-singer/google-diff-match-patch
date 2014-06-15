@@ -7,3 +7,4 @@ environment:
   sdk: '>=1.0.0 <2.0.0'
 dev_dependencies:
   unittest: '>=0.10.0'
+  collection: '>=0.9.3+1'
