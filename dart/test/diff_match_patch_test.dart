@@ -24,7 +24,7 @@ import 'dart:mirrors';
 import 'package:collection/equality.dart';
 import 'package:unittest/unittest.dart';
 
-import 'package:diff_match_patch/DiffMatchPatch.dart';
+import 'package:diff_match_patch/diff_match_patch.dart';
 
 part 'src/diff_tests.dart';
 part 'src/match_tests.dart';

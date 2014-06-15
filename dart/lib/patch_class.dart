@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-part of DiffMatchPatch;
+part of diff_match_patch;
 
 /**
  * Class representing one patch operation.

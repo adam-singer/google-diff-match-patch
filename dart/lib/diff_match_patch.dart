@@ -17,12 +17,12 @@
  * limitations under the License.
  */
 
-library DiffMatchPatch;
+library diff_match_patch;
 
 import 'dart:collection';
 import 'dart:math';
 import 'dart:convert';
 
-part 'DMPClass.dart';
-part 'DiffClass.dart';
-part 'PatchClass.dart';
+part 'dmp_class.dart';
+part 'diff_class.dart';
+part 'patch_class.dart';
