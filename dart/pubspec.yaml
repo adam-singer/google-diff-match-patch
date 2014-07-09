@@ -1,10 +1,12 @@
 name: diff_match_patch
 version: 0.0.1
-author: Neil Fraser <neil.fraser@gmail.com>
+authors:
+- Neil Fraser <neil.fraser@gmail.com>
+- Adam Singer <financeCoding@gmail.com>
 description: Diff, Match and Patch libraries for Plain Text
 homepage: https://code.google.com/p/google-diff-match-patch/
 environment:
   sdk: '>=1.0.0 <2.0.0'
 dev_dependencies:
-  unittest: '>=0.10.0'
-  collection: '>=0.9.3+1'
+  unittest: '>=0.10.0 <1.0.0'
+  collection: '>=0.9.3+1 <1.0.0'
