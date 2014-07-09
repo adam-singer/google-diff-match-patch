@@ -25,3 +25,8 @@ surround the diff algorithm, improving both performance and output quality.
 
 This library also implements a [Bitap matching algorithm](http://neil.fraser.name/software/diff_match_patch/bitap.ps) 
 at the heart of a flexible [matching and patching strategy](http://neil.fraser.name/writing/patch/).
+
+### Dart code
+
+The dart version of the code is being hosted at https://github.com/financeCoding/google-diff-match-patch 
+for the time being. 
