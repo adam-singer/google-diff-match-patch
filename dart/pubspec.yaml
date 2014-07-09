@@ -1,4 +1,4 @@
-name: diff_match_patch
+name: google_diff_match_patch
 version: 0.0.1
 authors:
 - Neil Fraser <neil.fraser@gmail.com>

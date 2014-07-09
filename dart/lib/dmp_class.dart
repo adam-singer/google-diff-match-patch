@@ -25,7 +25,7 @@
  * @author fraser@google.com (Neil Fraser)
  */
 
-part of diff_match_patch;
+part of google_diff_match_patch;
 
 /**
  * The data structure representing a diff is a List of Diff objects:

@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-part of diff_match_patch;
+part of google_diff_match_patch;
 
 /**
  * Class representing one diff operation.

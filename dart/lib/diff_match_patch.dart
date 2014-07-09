@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-library diff_match_patch;
+library google_diff_match_patch;
 
 import 'dart:collection';
 import 'dart:math';
